@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Febei : Face Expression Based Emoticon Identification">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Febei</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/febei/FEBEI">View on GitHub</a>
+
+          <h1 id="project_title">Febei</h1>
+          <h2 id="project_tagline">Face Expression Based Emoticon Identification</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/febei/FEBEI/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/febei/FEBEI/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="face-expression-based-emoticon-identification" class="anchor" href="#face-expression-based-emoticon-identification" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Face Expression Based Emoticon Identification</h1>
+
+<p>The Face Expression Based Emoticon Identification (FEBEI) system is an open source extension to the Tracker.js framework which converts a human facial expression to the best matching emoticon. The contribution of this project is to build this robust classifier which can identify facial expression in real time without any reliance on an external server or computation node. An entirely client-side JavaScript implementation has clear privacy benefits as well as the avoidance of any lag inherent in uploading and downloading images. We accomplished this by utilizing several computationally efficient methods. Tracking.js provided a Viola Jones based face detector which we used to pass facial images to our own implementation of an eigenemotion detection system which is trained to distinguish between happy and angry faces.</p>
+
+<h1>
+<a id="how-to-use" class="anchor" href="#how-to-use" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to use</h1>
+
+<p>The folder Eigenemotions contains the source code which exists as tracking-extension.js. There is also a sample implementation of the eigenemotions. This priliminary version can detect 2 emotions - angry and happy.</p>
+
+<p>Invoking the tracking extension is simple. For a static image it can be invoked as follows:</p>
+
+<pre><code>    var img = document.getElementById(&lt;image element selector&gt;);
+    var tracker = new tracking.ObjectTracker('face');
+    tracker.setStepSize(1.7);
+    tracking.track('#img', tracker);
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+    context.drawImage(img, 0, 0 );
+    tracking.detect('EigenEmotions', '#img', context, canvas, tracker, {});
+</code></pre>
+
+<p>The below is the code for invoking tracking extension for face expression recognition on live feed video:</p>
+
+<pre><code>    var video = document.getElementById(&lt;selector for video tag&gt;);
+    var canvas = document.getElementById(&lt;selector for canvas tag&gt;);
+    var context = canvas.getContext('2d');
+    var tracker = new tracking.ObjectTracker('face');
+    tracker.setInitialScale(4);
+    tracker.setStepSize(2);
+    tracker.setEdgesDensity(0.1);
+    tracking.detect('EigenEmotions', '#video', context, canvas, tracker, { camera: true });
+</code></pre>
+
+<p>Both of these are implemented in an example in face_exp.html</p>
+
+<p>The library has to be included in you project with multiple files. The typical set of files you would include are:</p>
+
+<pre><code>    &lt;script src="build/tracking.js"&gt;&lt;/script&gt;
+    &lt;script src="build/data/face-min.js"&gt;&lt;/script&gt;
+    &lt;script src="assets/stats.min.js"&gt;&lt;/script&gt;
+    &lt;script src="numeric.js"&gt;&lt;/script&gt;
+    &lt;script src="svm.js"&gt;&lt;/script&gt;
+    &lt;script src="build/data/svm_model.js"&gt;&lt;/script&gt;
+    &lt;script src="build/data/pca_data.js"&gt;&lt;/script&gt;
+    &lt;script src="build/data/pca_labels.js"&gt;&lt;/script&gt;
+    &lt;script src="build/data/pca_mean.js"&gt;&lt;/script&gt;
+    &lt;script src="build/data/pca_components.js"&gt;&lt;/script&gt;
+    &lt;script src="build/tracking_extension.js"&gt;&lt;/script&gt;
+    &lt;script src="https://code.jquery.com/jquery-2.2.3.min.js"&gt;&lt;/script&gt;
+</code></pre>
+
+<p>Any version of jquery can be included. The contents of the file are pretty self explanatory. Most of the JS files contains the raw model exported from the training on python. Singular Vector Decomposition (SVD) is achieved by importing the numeric.js library by Sébastien Loisel from <a href="http://www.numericjs.com/">http://www.numericjs.com/</a>. The SVM is obtained from the open sourced library svmjs by Andrej Karpathy from <a href="https://github.com/karpathy/svmjs">https://github.com/karpathy/svmjs</a>. Tracking.js serves as a backbone for this system and it can be found at <a href="https://trackingjs.com/">https://trackingjs.com/</a>. </p>
+
+<h1>
+<a id="how-to-train" class="anchor" href="#how-to-train" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to train</h1>
+
+<p>The training of this model can seem a bit intimidating but is actually not so. These are the steps involved:</p>
+
+<h1>
+<a id="1-changing-the-dataset" class="anchor" href="#1-changing-the-dataset" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>1. Changing the dataset</h1>
+
+<p>The folder emotions contains the actual images. Just change or add images to that. The subfolders are the classes. Pretty straightforward, no twists here. But it doesn't end there. You need to compress the new dataset into face_expressions.tgz and create new devtest and devtrain pair files. These are of the following format:</p>
+
+<pre><code>    10
+    happyfaces S026_006_00000006 S050_006_00000013
+    happyfaces S075_006_00000015 S075_006_00000011
+    happyfaces S057_006_00000019 S075_006_00000023
+    happyfaces S109_006_00000012 S076_006_00000007
+    happyfaces S026_006_00000006 angryfaces S042_005_00000019
+</code></pre>
+
+<p>The first line contains the number of cases and the lines after that are cases. Each line is of format:</p>
+
+<pre><code>    &lt;class&gt; &lt;file1&gt; {&lt;different_class&gt;} &lt;file2&gt;
+</code></pre>
+
+<p>the PairsDevTest.txt is the test file and PairsDevTrain.txt is the train file. Make sure you give as many training samples with as many combinations as possible.</p>
+
+<p>The last step is that now copy the whole face-rec folder (with the updated dataset and pair files) and place it as it is in your local server. I used the Apache server (MAMP, XAMPP, LAMP whichever u prefer) and just placed it in the htdocs folder. I would recommend the same for all to avoid hassles (You can contact us in any case, we will do the best to help).</p>
+
+<h1>
+<a id="2-training-the-new-model" class="anchor" href="#2-training-the-new-model" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>2. Training the new model</h1>
+
+<p>We have added a new model to scikit learn for the dataset. This is the face_expressions.py. This will download the face library that we have put to htdocs, resize and get the right frames for training and classification. This file should be placed in:</p>
+
+<pre><code>    /Library/Python/2.7/site-packages/sklearn/datasets
+</code></pre>
+
+<p>This is now usable to train. The file you should run to train and test is the face_rec.py in the python-face-rec-library folder. Once you change the dataset, ready the sklearn and run this you will obtain the following things:</p>
+
+<ol>
+<li>A PCA model pickle file</li>
+<li>A SVM pickle file</li>
+<li>A model.txt file with the training vectors</li>
+<li>A model_label.txt file with the training labels</li>
+<li>An example classification result</li>
+<li>The Eigenface pictures</li>
+</ol>
+
+<p>The first two are for the evaluatory python server inputs and do not need to be touched. The rest 2 are for the JS. The data in the model.txt should replace the data/pca_data.js file and the model_label.txt should replace the data/pca_labels.js.</p>
+
+<p>Congrats!! You have completed the first phase of training the new model.</p>
+
+<p>The next phase is fairly simple. Just visit the svm_train.html in your server with all the files present. It will train the new pca data and print the new numeric model which you should copy and replace the existing model in data/svm_model.js.</p>
+
+<p>And hence you have trained a new model. Good job!!</p>
+
+<h1>
+<a id="3-evaluating-the-new-model" class="anchor" href="#3-evaluating-the-new-model" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>3. Evaluating the new model</h1>
+
+<p>One can evaluate the model using the python flask server based classification. The code for this is also inherently present. The python server is face_server.py just do:</p>
+
+<pre><code>    python face_server.py
+</code></pre>
+
+<p>and the server should with the newest model loaded.</p>
+
+<h1>
+<a id="experiment-with-freedom" class="anchor" href="#experiment-with-freedom" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Experiment with freedom</h1>
+
+<p>We are a bunch of open source enthusiasts crazy about AI and vision. This is an ongoing project and the modules that we have made to work are powerful and promising. Hence we would like you to change the code to your needs and weave innovative uses out of it in your own way....no frills.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Febei maintained by <a href="https://github.com/febei">febei</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
