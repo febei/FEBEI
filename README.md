@@ -8,43 +8,43 @@ The folder Eigenemotions contains the source code which exists as tracking-exten
 
 Invoking the tracking extension is simple. For a static image it can be invoked as follows:
 
-				var img = document.getElementById(<image element selector>);
-				var tracker = new tracking.ObjectTracker('face');
-				tracker.setStepSize(1.7);
-				tracking.track('#img', tracker);
-				var canvas = document.createElement('canvas');
-				var context = canvas.getContext('2d');
-				context.drawImage(img, 0, 0 );
-				tracking.detect('EigenEmotions', '#img', context, canvas, tracker, {});
+		var img = document.getElementById(<image element selector>);
+		var tracker = new tracking.ObjectTracker('face');
+		tracker.setStepSize(1.7);
+		tracking.track('#img', tracker);
+		var canvas = document.createElement('canvas');
+		var context = canvas.getContext('2d');
+		context.drawImage(img, 0, 0 );
+		tracking.detect('EigenEmotions', '#img', context, canvas, tracker, {});
 
 
 The below is the code for invoking tracking extension for face expression recognition on live feed video:
 
-				var video = document.getElementById(<selector for video tag>);
-				var canvas = document.getElementById(<selector for canvas tag>);
-				var context = canvas.getContext('2d');
-				var tracker = new tracking.ObjectTracker('face');
-				tracker.setInitialScale(4);
-				tracker.setStepSize(2);
-				tracker.setEdgesDensity(0.1);
-				tracking.detect('EigenEmotions', '#video', context, canvas, tracker, { camera: true });
+		var video = document.getElementById(<selector for video tag>);
+		var canvas = document.getElementById(<selector for canvas tag>);
+		var context = canvas.getContext('2d');
+		var tracker = new tracking.ObjectTracker('face');
+		tracker.setInitialScale(4);
+		tracker.setStepSize(2);
+		tracker.setEdgesDensity(0.1);
+		tracking.detect('EigenEmotions', '#video', context, canvas, tracker, { camera: true });
 
 Both of these are implemented in an example in face_exp.html
 
 The library has to be included in you project with multiple files. The typical set of files you would include are:
 
-				<script src="build/tracking.js"></script>
-				<script src="build/data/face-min.js"></script>
-				<script src="assets/stats.min.js"></script>
-				<script src="numeric.js"></script>
-				<script src="svm.js"></script>
-				<script src="build/data/svm_model.js"></script>
-				<script src="build/data/pca_data.js"></script>
-				<script src="build/data/pca_labels.js"></script>
-				<script src="build/data/pca_mean.js"></script>
-				<script src="build/data/pca_components.js"></script>
-				<script src="build/tracking_extension.js"></script>
-				<script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+		<script src="build/tracking.js"></script>
+		<script src="build/data/face-min.js"></script>
+		<script src="assets/stats.min.js"></script>
+		<script src="numeric.js"></script>
+		<script src="svm.js"></script>
+		<script src="build/data/svm_model.js"></script>
+		<script src="build/data/pca_data.js"></script>
+		<script src="build/data/pca_labels.js"></script>
+		<script src="build/data/pca_mean.js"></script>
+		<script src="build/data/pca_components.js"></script>
+		<script src="build/tracking_extension.js"></script>
+		<script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
 
 
 Any version of jquery can be included. The contents of the file are pretty self explanatory. Most of the JS files contains the raw model exported from the training on python. Singular Vector Decomposition (SVD) is achieved by importing the numeric.js library by Sébastien Loisel from http://www.numericjs.com/. The SVM is obtained from the open sourced library svmjs by Andrej Karpathy from https://github.com/karpathy/svmjs. Tracking.js serves as a backbone for this system and it can be found at https://trackingjs.com/. 
@@ -57,16 +57,16 @@ The training of this model can seem a bit intimidating but is actually not so. T
 
 The folder emotions contains the actual images. Just change or add images to that. The subfolders are the classes. Pretty straightforward, no twists here. But it doesn't end there. You need to compress the new dataset into face_expressions.tgz and create new devtest and devtrain pair files. These are of the following format:
 
-			10
-			happyfaces S026_006_00000006 S050_006_00000013
-			happyfaces S075_006_00000015 S075_006_00000011
-			happyfaces S057_006_00000019 S075_006_00000023
-			happyfaces S109_006_00000012 S076_006_00000007
-			happyfaces S026_006_00000006 angryfaces S042_005_00000019
+		10
+		happyfaces S026_006_00000006 S050_006_00000013
+		happyfaces S075_006_00000015 S075_006_00000011
+		happyfaces S057_006_00000019 S075_006_00000023
+		happyfaces S109_006_00000012 S076_006_00000007
+		happyfaces S026_006_00000006 angryfaces S042_005_00000019
 
 The first line contains the number of cases and the lines after that are cases. Each line is of format:
 
-			<class> <file1> {<different_class>} <file2>
+		<class> <file1> {<different_class>} <file2>
 
 the PairsDevTest.txt is the test file and PairsDevTrain.txt is the train file. Make sure you give as many training samples with as many combinations as possible.
 
@@ -76,7 +76,7 @@ The last step is that now copy the whole face-rec folder (with the updated datas
 
 We have added a new model to scikit learn for the dataset. This is the face_expressions.py. This will download the face library that we have put to htdocs, resize and get the right frames for training and classification. This file should be placed in:
 
-				/Library/Python/2.7/site-packages/sklearn/datasets
+		/Library/Python/2.7/site-packages/sklearn/datasets
 
 This is now usable to train. The file you should run to train and test is the face_rec.py in the python-face-rec-library folder. Once you change the dataset, ready the sklearn and run this you will obtain the following things:
 
@@ -99,7 +99,7 @@ And hence you have trained a new model. Good job!!
 
 One can evaluate the model using the python flask server based classification. The code for this is also inherently present. The python server is face_server.py just do:
 
-				python face_server.py
+		python face_server.py
 
 and the server should with the newest model loaded.
 
