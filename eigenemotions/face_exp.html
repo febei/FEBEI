@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>tracking.js - face with camera</title>
+  <link rel="stylesheet" href="assets/demo.css">
+
+  <script src="build/tracking.js"></script>
+  <script src="build/data/face-min.js"></script>
+  <script src="assets/stats.min.js"></script>
+  <script src="numeric.js"></script>
+  <script src="svm.js"></script>
+  <script src="build/data/svm_model.js"></script>
+  <script src="build/data/pca_data.js"></script>
+  <script src="build/data/pca_labels.js"></script>
+  <script src="build/data/pca_mean.js"></script>
+  <script src="build/data/pca_components.js"></script>
+  <script src="build/tracking_extension.js"></script>
+  <script   src="https://code.jquery.com/jquery-2.2.3.min.js"   integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="   crossorigin="anonymous"></script>
+
+  <style>
+  video, canvas {
+    margin-left: 230px;
+    margin-top: 120px;
+    position: absolute;
+  }
+
+  .emotion{
+    display: inline-block;
+    position: absolute;
+    top: 55%;
+    left: 26%;
+  }
+
+  .happy{
+    display: inline-block;
+    vertical-align: middle;
+    background: url(assets/happy.png) no-repeat;
+    background-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .angry{
+    display: inline-block;
+    vertical-align: middle;
+    background: url(assets/angry.png) no-repeat;
+    background-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+  </style>
+</head>
+<body>
+
+  <div class="demo-title">
+    <p><a href="http://trackingjs.com" target="_parent">tracking.js Addon</a> － Detect facial expressions and map it to an emoticon</p>
+  </div>
+
+  <video id="video" width="250" height="250" preload autoplay loop muted></video>
+  <canvas id="canvas" width="250" height="250"></canvas>
+
+<!-- <img id="img" src="assets/angry6.jpg" /> -->
+
+<div class="js_pred emotion"></div>
+<div class="python_pred emotion" style="top:65%;"></div>
+
+<p>Canvas:</p>
+<canvas id="myCanvas" width="250" height="250" style="border:1px solid #d3d3d3;margin-top: 500px;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+
+  <script>
+    window.onload = function() {
+
+      // Uncomment this for accessing with images
+      // var img = document.getElementById('img');
+      // var tracker = new tracking.ObjectTracker('face');
+      // tracker.setStepSize(1.7);
+      // tracking.track('#img', tracker);
+      // var canvas = document.createElement('canvas');
+      // var context = canvas.getContext('2d');
+      // context.drawImage(img, 0, 0 );
+      // tracking.detect('EigenEmotions', '#img', context, canvas, tracker, {});
+
+      // Uncomment and use this for live video
+      var video = document.getElementById('video');
+      var canvas = document.getElementById('canvas');
+      var context = canvas.getContext('2d');
+      var tracker = new tracking.ObjectTracker('face');
+      tracker.setInitialScale(4);
+      tracker.setStepSize(2);
+      tracker.setEdgesDensity(0.1);
+      tracking.detect('EigenEmotions', '#video', context, canvas, tracker, { camera: true });
+    };
+  </script>
+
+</body>
+</html>

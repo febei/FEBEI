@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+<script src="data/pca_data.js"></script>
+<script src="data/pca_labels.js"></script>
+<script src="../svm.js"></script>
+</head>
+<body>
+	<script>
+    window.onload = function() {
+		svm = new svmjs.SVM();
+		svm.train(data, labels, {kernel: 'linear', maxiter: 100000, C: 1e3});
+		var svmjson = svm.toJSON();
+		var url = 'data:text/json;charset=utf8,' + encodeURIComponent(JSON.stringify(svmjson));
+		window.open(url, '_blank');
+		window.focus();
+	};
+	</script>
+</body>
